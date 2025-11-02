@@ -1,14 +1,10 @@
 {
-  "name": "demo-authentication",
-  "private": true,
-  "workspaces": [
-    "packages/*",
-    "ui"
-  ],
+  "name": "packages",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev --prefix js-service-api\" \"npm run dev --prefix jwt-login\""
   },
   "keywords": [],
   "author": "",
