@@ -1,12 +1,12 @@
-import LoginForm from "../components/LoginForm";
 import Dashboard from "../components/Dashboard";
+import NavBar from "../components/NavBar";
 
 function Home(){
     return(
         <div>
-            <h3>JWT Login</h3>
-            <LoginForm />
+            <h3>JWT Dashboard</h3>            
             <Dashboard />
+            <NavBar />
         </div>
     )
 }

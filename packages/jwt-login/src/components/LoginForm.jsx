@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,6 +23,7 @@ function LoginForm(){
                 localStorage.setItem('token', data.token);
                 console.log("Stored token: ", data.token);
                 setMessage('OK: ' + data.message);
+                navigate('/');
             }
             else{
                 setMessage('Fail: ' + data.message);
