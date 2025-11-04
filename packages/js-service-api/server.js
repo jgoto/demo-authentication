@@ -10,10 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 function verifyToken(req, res, next){
-    const authHeader = ['authorization'];
+    //console.log("Full Headers: ", JSON.stringify(req.headers, null, 2));
+    const authHeader = req.headers['authorization'];
+    
     const token = authHeader && authHeader.split(' ')[1];
-
-    if(!authHeader | authHeader.typeOf !== 'string'){
+    if(!authHeader || typeof authHeader !== 'string'){
         return res.status(401).json({message: 'Auth header missing or malformed'})
     }
     else if(!token){
@@ -23,23 +24,22 @@ function verifyToken(req, res, next){
         if(err){
             return res.status(403).json({message: 'Invalid or expired token'})
         }
+        req.user = user;
+        next();
     });
-
-    req.user = user;
-    next();
 }
 
 app.get('/ping', (req, res) => {
-    res.json({message: "pong"});
+    return res.json({message: "pong"});
 });
 
-app.get('/proping', verifyToken, (req, res) => {
+app.post('/protectedping', verifyToken, (req, res) => {
+    
     res.json({message: "protected pong"});
 });
 
 app.post('/login', (req, res) => {
     const {email, password} = req.body;
-    console.log('foo');
 
     if(email === process.env.EMAIL && password === process.env.PASSWORD){
         const token = jwt.sign(
