@@ -18,6 +18,8 @@ function LoginForm(){
             const data = await response.json();
 
             if (response.ok){
+                localStorage.setItem('token', data.token);
+                console.log("Stored token: ", data.token);
                 setMessage('OK: ' + data.message);
             }
             else{

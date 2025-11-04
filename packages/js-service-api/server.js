@@ -1,26 +1,57 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
-const cors = require('cors');
 app.use(cors());
-
 app.use(express.json());
+
+function verifyToken(req, res, next){
+    const authHeader = ['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if(!authHeader | authHeader.typeOf !== 'string'){
+        return res.status(401).json({message: 'Auth header missing or malformed'})
+    }
+    else if(!token){
+        return res.status(401).json({message: 'No token provided'});
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if(err){
+            return res.status(403).json({message: 'Invalid or expired token'})
+        }
+    });
+
+    req.user = user;
+    next();
+}
 
 app.get('/ping', (req, res) => {
     res.json({message: "pong"});
 });
 
+app.get('/proping', verifyToken, (req, res) => {
+    res.json({message: "protected pong"});
+});
+
 app.post('/login', (req, res) => {
     const {email, password} = req.body;
+    console.log('foo');
 
     if(email === process.env.EMAIL && password === process.env.PASSWORD){
-        res.json({message: "login successful"});
+        const token = jwt.sign(
+            { email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h'}
+        );
+        return res.json({message: "login successful", token: token});   
     }
     else{
-        res.status(401).json({message: "Invalid username or password"});
+        return res.status(401).json({message: "Invalid username or password"});
     }
-})
+});
 
 app.listen(PORT, ()=> console.log(`Server running on port: ${PORT}`));
